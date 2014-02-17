@@ -1,6 +1,103 @@
-div.timeline-frame {
+/* Original ... Edited below ========= */
+body { margin: 0; padding: 0;  -webkit-font-smoothing:antialiased;-moz-osx-font-smoothing: grayscale; }
+
+
+#timeline { font: normal 14px/120% 'PT Sans'; }
+
+div.timeline-frame{-moz-box-sizing:border-box;box-sizing:border-box;overflow:hidden;position:relative; border-bottom: 1px solid #B2B2B2; }
+div.timeline-frame:before {  }
+div.timeline-event-hidden { display: none; }
+div.timeline-content{overflow:hidden;position:relative;}
+
+div.timeline-axis{-moz-box-sizing:border-box;border-color:#B2B2B2;border-top-style:solid;border-width:2px;box-sizing:border-box; }
+div.timeline-axis-grid{-moz-box-sizing:border-box;border-left-style:solid;border-width:1px;box-sizing:border-box; }
+div.timeline-axis-grid-minor{border-color:#EBEBEB;}
+div.timeline-axis-grid-major{border-color:#EBEBEB;}
+
+div.timeline-axis-text{padding:5px;white-space:nowrap; font-size: 12px; line-height: 120%;}
+div.timeline-axis-text-minor{ color: #9A9A9A}
+div.timeline-axis-text-major{ color: #3D484E; margin-top: -10px;}
+
+div.timeline-event{-moz-box-sizing:border-box; border: none;color:#fff;display:inline-block;}
+div.timeline-event.tick-first-person  { background: #17C1F4; }
+div.timeline-event.tick-collaborated  { background: #17C1F4; }
+div.timeline-event.tick-private  { background: #F8322F; }
+div.timeline-event.tick-new  { background: #FC7025; }
+div.timeline-event.tick-third-person  { background: #778890;  }
+div.timeline-event.tick-third-person span { display: block; padding: 0 0 10px 0; }
+div.timeline-event.tick-third-person span img { display: inline-block; vertical-align: middle; border-radius: 3px; }
+div.timeline-event.tick-third-person span strong { font-size: 12px; font-weight: normal; vertical-align: middle; color: #CDD2D5; }
+div.timeline-event.tick-first-person:after  { border-top: 10px solid #17C1F4; }
+div.timeline-event.tick-collaborated:after  { border-top: 10px solid #17C1F4; }
+div.timeline-event.tick-private:after  { border-top: 10px solid #F8322F; }
+div.timeline-event.tick-new:after  { border-top: 10px solid #FC7025; }
+div.timeline-event.tick-third-person:after  { border-top: 10px solid #778890;  }
+
+div.timeline-event-selected{background-color:#fff785;border-color:#ffc200;z-index:999;}
+
+div.timeline-event-box{  -moz-border-radius:3px;/* For Firefox 3.6 and older */border-radius:3px;border: none; text-align:center; position: relative; /* box-shadow: 0 2px 0 rgba(0,0,0,.1);   */padding: 3px 5px; max-width: 200px;}
+/* div.timeline-event-box:before { content: ''; border-left: 12px solid transparent; border-right: 12px solid transparent; border-top: 12px solid rgba(0,0,0,.1); position: absolute; top: 100%; margin: 0 0 0 -12px; } */
+div.timeline-event-box:after { content: ''; border-left: 10px solid transparent; border-right: 10px solid transparent; position: absolute; top: 100%;  margin: 0 0 0 -10px; left: 50%; }
+
+div.timeline-event-cluster  { background: #fff; color: #01B2E5;  border: 1px solid #B2B2B2;}
+div.timeline-event-box.timeline-event-cluster:before { content: ''; border-left: 12px solid transparent; border-right: 12px solid transparent; border-top: 12px solid #B2B2B2; position: absolute; top: 100%; margin: 0 0 0 -12px; }
+div.timeline-event-box.timeline-event-cluster:after  { color: #01B2E5; border-left: 10px solid transparent; border-right: 10px solid transparent; border-top: 10px solid #fff;}
+div.timeline-event-cluster div.timeline-event-dot{border-color:#d5ddf6;}
+
+div.timeline-event-dot{-moz-border-radius:3px; border-radius:3px; border: 1px solid #fff; height: 14px !important; width: 3px !important; margin: 0; padding: 0 1px 0 1px;}
+div.timeline-event-dot.tick-new { height: 20px !important; }
+div.timeline-event-dot.tick-collaborated { position: relative; }
+div.timeline-event-dot.timeline-event-cluster { background: #fff; border: 1px solid #B2B2B2 }
+div.timeline-event-dot.tick-collaborated:before { content: ''; -moz-border-radius:3px; border-radius:3px; border: 1px solid #fff; background: #17C1F4; position: absolute; top: -8px; width: 3px; height: 3px; margin: 0 0 0 -1px; padding: 1px; left: 0; }
+
+div.timeline-event-range{-moz-border-radius:2px;/* For Firefox 3.6 and older */border-radius:2px;border-style:solid;border-width:1px;}
+div.timeline-event-range-drag-left{cursor:w-resize;z-index:1000;}
+div.timeline-event-range-drag-right{cursor:e-resize;z-index:1000;}
+
+div.timeline-event-line{-moz-box-sizing:border-box;border-left-style:solid;border-left-width:1px;box-sizing:border-box;}
+
+div.timeline-event-content{margin:5px;overflow:hidden;}
+
+div.timeline-groups-axis{-moz-box-sizing:border-box;border-color:#bebebe;border-width:2px;box-sizing:border-box;}
+div.timeline-groups-axis-onleft{border-style:none solid none none;}
+div.timeline-groups-axis-onright{border-style:none none none solid;}
+
+div.timeline-groups-text{color:#4d4d4d;padding-left:10px;padding-right:10px;}
+
+div.timeline-currenttime{background-color:#C0C0C0; width:1px; -moz-box-sizing: border-box; box-sizing: border-box;}
+div.timeline-currenttime:before { content: 'NOW'; background: #C0C0C0; color: #fff; font-size: 10px; line-height: 100%; padding: 4px 0 3px 0; width: 34px; border-radius: 3px; margin: 50px 0 0 -17px; text-align: center;  display: block; }
+/*
+div.timeline-currenttime:hover,
+div.timeline-currenttime:hover:before { background: #3C474E; cursor: pointer; }
+*/
+
+div.timeline-customtime{-moz-box-sizing:border-box;background-color:#6e94ff;box-sizing:border-box;cursor:move;width:2px;}
+
+div.timeline-navigation{-moz-border-radius:2px;/* For Firefox 3.6 and older */-moz-box-sizing:border-box;background-color:#f5f5f5;border:1px solid #bebebe;border-radius:2px;box-sizing:border-box;color:gray;font-family:arial;font-size:20px;font-weight:700;}
+div.timeline-navigation-new,
+div.timeline-navigation-delete,
+div.timeline-navigation-zoom-in,
+div.timeline-navigation-zoom-out,
+div.timeline-navigation-move-left,
+div.timeline-navigation-move-right{-moz-box-sizing:border-box;box-sizing:border-box;cursor:pointer;float:left;height:36px;padding:10px;text-decoration:none;width:36px;}
+div.timeline-navigation-new{background:url(img/16/new.png) no-repeat center;}
+
+
+div.timeline-navigation-new-line{border-right:1px solid #bebebe;}
+/*div.timeline-navigation-delete{background:url(img/16/delete.png) no-repeat center;}
+div.timeline-navigation-zoom-in{background:url(img/16/zoomin.png) no-repeat center;}
+div.timeline-navigation-zoom-out{background:url(img/16/zoomout.png) no-repeat center;}
+div.timeline-navigation-move-left{background:url(img/16/moveleft.png) no-repeat center;}
+div.timeline-navigation-move-right{background:url(img/16/moveright.png) no-repeat center;}*/
+
+
+/* Edited ... Original below ========= */
+
+
+
+/*div.timeline-frame {
     -moz-box-sizing: border-box;
-    border: 1px solid #bebebe;
+    #border: 1px solid #bebebe;
     box-sizing: border-box;
     overflow: hidden;
     position: relative;
@@ -61,7 +158,6 @@ div.timeline-event-selected {
     z-index: 999;
 }
 
-/* TODO: use another color or pattern? */
 div.timeline-event-cluster {
     background: url('img/cluster_bg.png') #97b0f8;
     color: #ffffff;
@@ -72,22 +168,22 @@ div.timeline-event-cluster div.timeline-event-dot {
 }
 
 div.timeline-event-box {
-    -moz-border-radius: 5px; /* For Firefox 3.6 and older */
-    border-radius: 5px;
+    #-moz-border-radius: 5px;
+    #border-radius: 5px;
     border-style: solid;
     border-width: 1px;
     text-align: center;
 }
 
 div.timeline-event-dot {
-    -moz-border-radius: 5px; /* For Firefox 3.6 and older */
-    border-radius: 5px;
+    #-moz-border-radius: 5px;
+    #border-radius: 5px;
     border-style: solid;
-    border-width: 5px;
+    border-width: 2px;
 }
 
 div.timeline-event-range {
-    -moz-border-radius: 2px; /* For Firefox 3.6 and older */
+    -moz-border-radius: 2px;
     border-radius: 2px;
     border-style: solid;
     border-width: 1px;
@@ -153,7 +249,7 @@ div.timeline-customtime {
 }
 
 div.timeline-navigation {
-    -moz-border-radius: 2px; /* For Firefox 3.6 and older */
+    -moz-border-radius: 2px;
     -moz-box-sizing: border-box;
     background-color: #f5f5f5;
     border: 1px solid #bebebe;
@@ -185,7 +281,7 @@ div.timeline-navigation-new {
     background: url('img/16/new.png') no-repeat center;
 }
 
-/* separator between new and navigation buttons */
+// separator between new and navigation buttons
 div.timeline-navigation-new-line {
     border-right: 1px solid #bebebe;
 }

@@ -208,6 +208,7 @@ links.Timeline = function(container) {
         'animateZoom': true,
         'cluster': false,
         'style': 'box',
+        'collapseTicks' : true,
         'customStackOrder': false, //a function(a,b) for determining stackorder amongst a group of items. Essentially a comparator, -ve value for "a before b" and vice versa
         
         // i18n: Timeline only has built-in English text per default. Include timeline-locales.js to support more localized text.
@@ -556,7 +557,7 @@ links.Timeline.prototype.getItemIndex = function(element) {
         // yes! we have found the parent element of all items
         // retrieve its id from the array with items
         for (var i = 0, iMax = items.length; i < iMax; i++) {
-            if (items[i].dom === e) {
+            if (items[i].dom === e || items[i].dom == e.box) {
                 index = i;
                 break;
             }
@@ -888,6 +889,11 @@ links.Timeline.prototype.repaintFrame = function() {
             params.onMouseDown = function (event) {me.onMouseDown(event);};
             links.Timeline.addEventListener(dom.content, "mousedown", params.onMouseDown);
         }
+        if (!params.onMouseOver) {
+            params.onMouseOver = function (event) {me.onMouseOver(event);};
+            links.Timeline.addEventListener(dom.content, "mouseover", params.onMouseOver);
+        }
+        
         if (!params.onTouchStart) {
             params.onTouchStart = function (event) {me.onTouchStart(event);};
             links.Timeline.addEventListener(dom.content, "touchstart", params.onTouchStart);
@@ -1653,12 +1659,12 @@ links.Timeline.prototype.repaintItems = function() {
         (queue.hide.length > 0);   // TODO: reflow needed on hide of items?
 
     while (item = queue.show.shift()) {
-        item.showDOM(frame);
+        item.showDOM(frame, this.options.collapseTicks);
         item.getImageUrls(newImageUrls);
         renderedItems.push(item);
     }
     while (item = queue.update.shift()) {
-        item.updateDOM(frame);
+        item.updateDOM(this.options.collapseTicks);
         item.getImageUrls(newImageUrls);
         index = this.renderedItems.indexOf(item);
         if (index == -1) {
@@ -2584,6 +2590,45 @@ links.Timeline.prototype.onTouchEnd = function(event) {
 
 
 /**
+ * Mouse over operation inside the provided parent element
+ * @param {Event} event       The event that occurred (required for
+ *                             retrieving the  mouse position)
+ */
+links.Timeline.prototype.onMouseOver = function(event) {
+    event = event || window.event;
+
+    var params = this.eventParams,
+        options = this.options,
+        dom = this.dom;
+
+    // get mouse position
+    params.mouseX = links.Timeline.getPageX(event);
+    params.mouseY = links.Timeline.getPageY(event);
+    params.frameLeft = links.Timeline.getAbsoluteLeft(this.dom.content);
+    params.frameTop = links.Timeline.getAbsoluteTop(this.dom.content);
+    params.previousLeft = 0;
+    params.previousOffset = 0;
+
+    params.moved = false;
+    params.start = new Date(this.start.valueOf());
+    params.end = new Date(this.end.valueOf());
+
+    params.target = links.Timeline.getTarget(event);
+    params.itemIndex = this.getItemIndex(params.target);
+
+    if (options.selectable) {
+        // select/unselect item
+        if (params.itemIndex != undefined) {
+            if (!this.isSelected(params.itemIndex)) {
+                this.unselectItem();
+                this.selectItem(params.itemIndex);
+                this.trigger('select');
+            }
+        }
+    }
+};
+
+/**
  * Start a moving operation inside the provided parent element
  * @param {Event} event       The event that occurred (required for
  *                             retrieving the  mouse position)
@@ -3496,14 +3541,14 @@ links.Timeline.Item.prototype.getImageUrls = function (imageUrls) {
 /**
  * Select the item
  */
-links.Timeline.Item.prototype.select = function () {
+links.Timeline.Item.prototype.select = function (collapsed) {
     // Should be implemented by sub-prototype
 };
 
 /**
  * Unselect the item
  */
-links.Timeline.Item.prototype.unselect = function () {
+links.Timeline.Item.prototype.unselect = function (collapsed) {
     // Should be implemented by sub-prototype
 };
 
@@ -3511,7 +3556,7 @@ links.Timeline.Item.prototype.unselect = function () {
  * Creates the DOM for the item, depending on its type
  * @return {Element | undefined}
  */
-links.Timeline.Item.prototype.createDOM = function () {
+links.Timeline.Item.prototype.createDOM = function (collapsed) {
     // Should be implemented by sub-prototype
 };
 
@@ -3520,7 +3565,7 @@ links.Timeline.Item.prototype.createDOM = function () {
  * exist, it will be created first.
  * @param {Element} container
  */
-links.Timeline.Item.prototype.showDOM = function (container) {
+links.Timeline.Item.prototype.showDOM = function (container, collapsed) {
     // Should be implemented by sub-prototype
 };
 
@@ -3536,7 +3581,7 @@ links.Timeline.Item.prototype.hideDOM = function (container) {
  * Update the DOM of the item. This will update the content and the classes
  * of the item
  */
-links.Timeline.Item.prototype.updateDOM = function () {
+links.Timeline.Item.prototype.updateDOM = function (collapsed) {
     // Should be implemented by sub-prototype
 };
 
@@ -3644,9 +3689,21 @@ links.Timeline.ItemBox.prototype.reflow = function () {
  * Select the item
  * @override
  */
-links.Timeline.ItemBox.prototype.select = function () {
+links.Timeline.ItemBox.prototype.select = function (collapsed) {
     var dom = this.dom;
-    links.Timeline.addClassName(dom, 'timeline-event-selected ui-state-active');
+    if (collapsed) {
+        links.Timeline.removeClassName(dom, 'timeline-event-hidden');
+        links.Timeline.addClassName(dom, 'timeline-event timeline-event-box timeline-event-selected ui-state-active');
+
+        // Reset the position based on the current top and left
+        if (dom.line.offsetTop == dom.offsetTop) {
+            dom.style.top = dom.offsetTop - dom.offsetHeight + "px";
+            dom.style.left = Math.max(0, dom.offsetLeft - dom.offsetWidth / 2) + "px";
+        }
+    }
+    else {
+        links.Timeline.addClassName(dom, 'timeline-event-selected ui-state-active');
+    }
     links.Timeline.addClassName(dom.line, 'timeline-event-selected ui-state-active');
     links.Timeline.addClassName(dom.dot, 'timeline-event-selected ui-state-active');
 };
@@ -3655,9 +3712,15 @@ links.Timeline.ItemBox.prototype.select = function () {
  * Unselect the item
  * @override
  */
-links.Timeline.ItemBox.prototype.unselect = function () {
+links.Timeline.ItemBox.prototype.unselect = function (collapsed) {
     var dom = this.dom;
-    links.Timeline.removeClassName(dom, 'timeline-event-selected ui-state-active');
+    if (collapsed) {
+        links.Timeline.addClassName(dom, 'timeline-event-hidden');
+        links.Timeline.removeClassName(dom, 'timeline-event timeline-event-box timeline-event-selected ui-state-active');
+    }
+    else {
+        links.Timeline.removeClassName(dom, 'timeline-event-selected ui-state-active');
+    }
     links.Timeline.removeClassName(dom.line, 'timeline-event-selected ui-state-active');
     links.Timeline.removeClassName(dom.dot, 'timeline-event-selected ui-state-active');
 };
@@ -3667,7 +3730,7 @@ links.Timeline.ItemBox.prototype.unselect = function () {
  * @return {Element | undefined}
  * @override
  */
-links.Timeline.ItemBox.prototype.createDOM = function () {
+links.Timeline.ItemBox.prototype.createDOM = function (collapsed) {
     // background box
     var divBox = document.createElement("DIV");
     divBox.style.position = "absolute";
@@ -3696,7 +3759,7 @@ links.Timeline.ItemBox.prototype.createDOM = function () {
     divBox.dot = divDot;
 
     this.dom = divBox;
-    this.updateDOM();
+    this.updateDOM(collapsed);
 
     return divBox;
 };
@@ -3707,10 +3770,10 @@ links.Timeline.ItemBox.prototype.createDOM = function () {
  * @param {Element} container
  * @override
  */
-links.Timeline.ItemBox.prototype.showDOM = function (container) {
+links.Timeline.ItemBox.prototype.showDOM = function (container, collapsed) {
     var dom = this.dom;
     if (!dom) {
-        dom = this.createDOM();
+        dom = this.createDOM(collapsed);
     }
 
     if (dom.parentNode != container) {
@@ -3755,7 +3818,7 @@ links.Timeline.ItemBox.prototype.hideDOM = function () {
  * of the item
  * @override
  */
-links.Timeline.ItemBox.prototype.updateDOM = function () {
+links.Timeline.ItemBox.prototype.updateDOM = function (collapsed) {
     var divBox = this.dom;
     if (divBox) {
         var divLine = divBox.line;
@@ -3765,14 +3828,20 @@ links.Timeline.ItemBox.prototype.updateDOM = function () {
         divBox.firstChild.innerHTML = this.content;
 
         // update class
-        divBox.className = "timeline-event timeline-event-box ui-widget ui-state-default";
+        if (!collapsed) {
+            divBox.className = "timeline-event timeline-event-box ui-widget ui-state-default";
+        }
         divLine.className = "timeline-event timeline-event-line ui-widget ui-state-default";
         divDot.className  = "timeline-event timeline-event-dot ui-widget ui-state-default";
 
         if (this.isCluster) {
+            divBox.className = "timeline-event timeline-event-box ui-widget ui-state-default";
             links.Timeline.addClassName(divBox, 'timeline-event-cluster ui-widget-header');
             links.Timeline.addClassName(divLine, 'timeline-event-cluster ui-widget-header');
             links.Timeline.addClassName(divDot, 'timeline-event-cluster ui-widget-header');
+        }
+        else if (collapsed) {
+            divBox.className = "timeline-event-hidden ui-widget ui-state-default";
         }
 
         // add item specific class name when provided
@@ -3783,6 +3852,8 @@ links.Timeline.ItemBox.prototype.updateDOM = function () {
         }
 
         // TODO: apply selected className?
+        divLine.box = divBox;
+        divDot.box = divBox;
     }
 };
 
@@ -3910,7 +3981,7 @@ links.Timeline.ItemRange.prototype = new links.Timeline.Item();
  * Select the item
  * @override
  */
-links.Timeline.ItemRange.prototype.select = function () {
+links.Timeline.ItemRange.prototype.select = function (collapsed) {
     var dom = this.dom;
     links.Timeline.addClassName(dom, 'timeline-event-selected ui-state-active');
 };
@@ -3919,7 +3990,7 @@ links.Timeline.ItemRange.prototype.select = function () {
  * Unselect the item
  * @override
  */
-links.Timeline.ItemRange.prototype.unselect = function () {
+links.Timeline.ItemRange.prototype.unselect = function (collapsed) {
     var dom = this.dom;
     links.Timeline.removeClassName(dom, 'timeline-event-selected ui-state-active');
 };
@@ -3929,7 +4000,7 @@ links.Timeline.ItemRange.prototype.unselect = function () {
  * @return {Element | undefined}
  * @override
  */
-links.Timeline.ItemRange.prototype.createDOM = function () {
+links.Timeline.ItemRange.prototype.createDOM = function (collapsed) {
     // background box
     var divBox = document.createElement("DIV");
     divBox.style.position = "absolute";
@@ -3940,7 +4011,7 @@ links.Timeline.ItemRange.prototype.createDOM = function () {
     divBox.appendChild(divContent);
 
     this.dom = divBox;
-    this.updateDOM();
+    this.updateDOM(collapsed);
 
     return divBox;
 };
@@ -3951,10 +4022,10 @@ links.Timeline.ItemRange.prototype.createDOM = function () {
  * @param {Element} container
  * @override
  */
-links.Timeline.ItemRange.prototype.showDOM = function (container) {
+links.Timeline.ItemRange.prototype.showDOM = function (container, collapsed) {
     var dom = this.dom;
     if (!dom) {
-        dom = this.createDOM();
+        dom = this.createDOM(collapsed);
     }
 
     if (dom.parentNode != container) {
@@ -3989,7 +4060,7 @@ links.Timeline.ItemRange.prototype.hideDOM = function () {
  * of the item
  * @override
  */
-links.Timeline.ItemRange.prototype.updateDOM = function () {
+links.Timeline.ItemRange.prototype.updateDOM = function (collapsed) {
     var divBox = this.dom;
     if (divBox) {
         // update contents
@@ -4137,7 +4208,7 @@ links.Timeline.ItemDot.prototype.reflow = function () {
  * Select the item
  * @override
  */
-links.Timeline.ItemDot.prototype.select = function () {
+links.Timeline.ItemDot.prototype.select = function (collapsed) {
     var dom = this.dom;
     links.Timeline.addClassName(dom, 'timeline-event-selected ui-state-active');
 };
@@ -4146,7 +4217,7 @@ links.Timeline.ItemDot.prototype.select = function () {
  * Unselect the item
  * @override
  */
-links.Timeline.ItemDot.prototype.unselect = function () {
+links.Timeline.ItemDot.prototype.unselect = function (collapsed) {
     var dom = this.dom;
     links.Timeline.removeClassName(dom, 'timeline-event-selected ui-state-active');
 };
@@ -4156,7 +4227,7 @@ links.Timeline.ItemDot.prototype.unselect = function () {
  * @return {Element | undefined}
  * @override
  */
-links.Timeline.ItemDot.prototype.createDOM = function () {
+links.Timeline.ItemDot.prototype.createDOM = function (collapsed) {
     // background box
     var divBox = document.createElement("DIV");
     divBox.style.position = "absolute";
@@ -4177,7 +4248,7 @@ links.Timeline.ItemDot.prototype.createDOM = function () {
     divBox.dot = divDot;
 
     this.dom = divBox;
-    this.updateDOM();
+    this.updateDOM(collapsed);
 
     return divBox;
 };
@@ -4188,10 +4259,10 @@ links.Timeline.ItemDot.prototype.createDOM = function () {
  * @param {Element} container
  * @override
  */
-links.Timeline.ItemDot.prototype.showDOM = function (container) {
+links.Timeline.ItemDot.prototype.showDOM = function (container,collapsed) {
     var dom = this.dom;
     if (!dom) {
-        dom = this.createDOM();
+        dom = this.createDOM(collapsed);
     }
 
     if (dom.parentNode != container) {
@@ -4225,7 +4296,7 @@ links.Timeline.ItemDot.prototype.hideDOM = function () {
  * of the item
  * @override
  */
-links.Timeline.ItemDot.prototype.updateDOM = function () {
+links.Timeline.ItemDot.prototype.updateDOM = function (collapsed) {
     if (this.dom) {
         var divBox = this.dom;
         var divDot = divBox.dot;
@@ -4699,7 +4770,7 @@ links.Timeline.prototype.selectItem = function(index) {
             if (this.isEditable(item)) {
                 item.dom.style.cursor = 'move';
             }
-            item.select();
+            item.select(this.options.collapseTicks);
         }
         this.repaintDeleteButton();
         this.repaintDragAreas();
@@ -4725,7 +4796,7 @@ links.Timeline.prototype.unselectItem = function() {
         if (item && item.dom) {
             var domItem = item.dom;
             domItem.style.cursor = '';
-            item.unselect();
+            item.unselect(this.options.collapseTicks);
         }
 
         this.selection = undefined;
