@@ -17,6 +17,7 @@
  @author  Jos de Jong, <jos@almende.org>
  @date    2014-01-14
  @version 2.6.1
+
 */
 typeof links==="undefined"&&(links={});typeof google==="undefined"&&(google=void 0);if(!Array.prototype.indexOf)Array.prototype.indexOf=function(a){for(var b=0;b<this.length;b++)if(this[b]==a)return b;return-1};if(!Array.prototype.forEach)Array.prototype.forEach=function(a,b){for(var c=0,d=this.length;c<d;++c)a.call(b||this,this[c],c,this)};
 links.Timeline=function(a){if(a){this.dom={};this.conversion={};this.eventParams={};this.groups=[];this.groupIndexes={};this.items=[];this.renderQueue={show:[],hide:[],update:[]};this.renderedItems=[];this.clusterGenerator=new links.Timeline.ClusterGenerator(this);this.currentClusters=[];this.selection=void 0;this.listeners={};this.size={actualHeight:0,axis:{characterMajorHeight:0,characterMajorWidth:0,characterMinorHeight:0,characterMinorWidth:0,height:0,labelMajorTop:0,labelMinorTop:0,line:0,lineMajorWidth:0,
