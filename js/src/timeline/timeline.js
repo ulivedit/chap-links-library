@@ -208,7 +208,7 @@ links.Timeline = function(container) {
         'animateZoom': true,
         'cluster': false,
         'style': 'box',
-        'collapseTicks' : true,
+        'collapseTicks': true,
         'customStackOrder': false, //a function(a,b) for determining stackorder amongst a group of items. Essentially a comparator, -ve value for "a before b" and vice versa
         
         // i18n: Timeline only has built-in English text per default. Include timeline-locales.js to support more localized text.
