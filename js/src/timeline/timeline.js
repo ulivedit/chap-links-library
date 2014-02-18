@@ -4812,7 +4812,7 @@ links.Timeline.prototype.getSelection = function() {
  * @param {Number} index
  */
 links.Timeline.prototype.selectItem = function(index, hoverOnly) {
-    this.unselectItem();
+    this.unselectItem(hoverOnly);
 
     this.selection = undefined;
 
