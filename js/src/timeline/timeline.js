@@ -3035,10 +3035,10 @@ links.Timeline.prototype.onMouseUp = function (event) {
             else if (options.selectable) {
                 // select/unselect item
                 if (params.itemIndex != undefined) {
-                    if (!this.isSelected(params.itemIndex)) {
+                    //if (!this.isSelected(params.itemIndex)) {
                         this.selectItem(params.itemIndex);
                         this.trigger('select');
-                    }
+                    //}
                 }
                 else {
                     if (options.unselectable) {
