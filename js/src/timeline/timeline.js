@@ -3739,7 +3739,7 @@ links.Timeline.ItemBox.prototype.select = function (collapsed) {
         if (dom.line.offsetTop == dom.offsetTop) {
             dom.style.top = dom.offsetTop - dom.offsetHeight + "px";
             //dom.style.left = Math.max(0, dom.offsetLeft - dom.offsetWidth / 2) + "px";
-            dom.style.left = dom.offsetLeft - dom.offsetWidth / 2;
+            dom.style.left = dom.offsetLeft - dom.offsetWidth / 2 + "px";
         }
     }
     else {
