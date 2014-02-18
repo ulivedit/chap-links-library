@@ -2623,8 +2623,8 @@ links.Timeline.prototype.onMouseOver = function(event) {
         // select/unselect item
         if (params.itemIndex != undefined) {
             if (!this.isSelected(params.itemIndex)) {
-                this.unselectItem();
-                this.selectItem(params.itemIndex);
+                this.unselectItem(true);
+                this.selectItem(params.itemIndex, true);
             }
         }
     }
@@ -2661,7 +2661,7 @@ links.Timeline.prototype.onMouseOut = function(event) {
         // select/unselect item
         if (params.itemIndex != undefined) {
             if (this.isSelected(params.itemIndex)) {
-                this.unselectItem();
+                this.unselectItem(true);
             }
         }
     }
@@ -3036,13 +3036,13 @@ links.Timeline.prototype.onMouseUp = function (event) {
                 // select/unselect item
                 if (params.itemIndex != undefined) {
                     //if (!this.isSelected(params.itemIndex)) {
-                        this.selectItem(params.itemIndex);
+                        this.selectItem(params.itemIndex, false);
                         this.trigger('select');
                     //}
                 }
                 else {
                     if (options.unselectable) {
-                        this.unselectItem();
+                        this.unselectItem(false);
                         this.trigger('select');
                     }
                 }
@@ -3543,6 +3543,8 @@ links.Timeline.Item = function (data, options) {
     this.lineWidth = 0;
     this.dotWidth = 0;
     this.dotHeight = 0;
+    this.hovered = false;
+    this.selected = false;
 
     this.rendered = false; // true when the item is draw in the Timeline DOM
 
@@ -3557,7 +3559,21 @@ links.Timeline.Item = function (data, options) {
 
 };
 
+/**
+ *
+ */
+links.Timeline.Item.prototype.hoverOver = function (collapseTicks) {
+    // Should be implemented by sub-prototype
+    return false;
+};
 
+/**
+ *
+ */
+links.Timeline.Item.prototype.hoverOut = function (collapseTicks) {
+    // Should be implemented by sub-prototype
+    return false;
+};
 
 /**
  * Reflow the Item: retrieve its actual size from the DOM
@@ -3581,7 +3597,7 @@ links.Timeline.Item.prototype.getImageUrls = function (imageUrls) {
 /**
  * Select the item
  */
-links.Timeline.Item.prototype.select = function (collapsed) {
+links.Timeline.Item.prototype.select = function (collapsed, hoverOnly) {
     // Should be implemented by sub-prototype
 };
 
@@ -3702,6 +3718,7 @@ links.Timeline.ItemBox = function (data, options) {
 
 links.Timeline.ItemBox.prototype = new links.Timeline.Item();
 
+
 /**
  * Reflow the Item: retrieve its actual size from the DOM
  * @return {boolean} resized    returns true if the axis is resized
@@ -3732,6 +3749,7 @@ links.Timeline.ItemBox.prototype.reflow = function () {
 links.Timeline.ItemBox.prototype.select = function (collapsed) {
     var dom = this.dom;
     if (collapsed) {
+
         links.Timeline.removeClassName(dom, 'timeline-event-hidden');
         links.Timeline.addClassName(dom, 'timeline-event timeline-event-box timeline-event-selected ui-state-active');
 
@@ -4793,7 +4811,7 @@ links.Timeline.prototype.getSelection = function() {
  * Select an item by its index
  * @param {Number} index
  */
-links.Timeline.prototype.selectItem = function(index) {
+links.Timeline.prototype.selectItem = function(index, hoverOnly) {
     this.unselectItem();
 
     this.selection = undefined;
@@ -4810,6 +4828,13 @@ links.Timeline.prototype.selectItem = function(index) {
             // TODO: move adjusting the domItem to the item itself
             if (this.isEditable(item)) {
                 item.dom.style.cursor = 'move';
+            }
+            if (hoverOnly) {
+                item.hovered = true;
+            }
+            else {
+                item.hovered = false;
+                item.selected = true;
             }
             item.select(this.options.collapseTicks);
         }
@@ -4830,14 +4855,22 @@ links.Timeline.prototype.isSelected = function (index) {
 /**
  * Unselect the currently selected event (if any)
  */
-links.Timeline.prototype.unselectItem = function() {
+links.Timeline.prototype.unselectItem = function(hoverOnly) {
     if (this.selection) {
         var item = this.items[this.selection.index];
 
         if (item && item.dom) {
             var domItem = item.dom;
             domItem.style.cursor = '';
-            item.unselect(this.options.collapseTicks);
+
+            if (item.selected && !hoverOnly) {
+                item.unselect(this.options.collapseTicks)
+                item.selected = false;
+            }
+            else if (!item.selected && hoverOnly) {
+                item.unselect(this.options.collapseTicks);
+                item.hovered = false;
+            }
         }
 
         this.selection = undefined;
