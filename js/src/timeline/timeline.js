@@ -893,10 +893,10 @@ links.Timeline.prototype.repaintFrame = function() {
             params.onMouseOver = function (event) {me.onMouseOver(event);};
             links.Timeline.addEventListener(dom.content, "mouseover", params.onMouseOver);
         }
-        if (!params.onMouseOut) {
-            params.onMouseOut = function (event) {me.onMouseOut(event);};
-            links.Timeline.addEventListener(dom.content, "mouseout", params.onMouseOut);
-        }
+//        if (!params.onMouseOut) {
+//            params.onMouseOut = function (event) {me.onMouseOut(event);};
+//            links.Timeline.addEventListener(dom.content, "mouseout", params.onMouseOut);
+//        }
         if (!params.onTouchStart) {
             params.onTouchStart = function (event) {me.onTouchStart(event);};
             links.Timeline.addEventListener(dom.content, "touchstart", params.onTouchStart);
@@ -2635,37 +2635,37 @@ links.Timeline.prototype.onMouseOver = function(event) {
  * @param {Event} event       The event that occurred (required for
  *                             retrieving the  mouse position)
  */
-links.Timeline.prototype.onMouseOut = function(event) {
-    event = event || window.event;
-
-    var params = this.eventParams,
-        options = this.options,
-        dom = this.dom;
-
-    // get mouse position
-    params.mouseX = links.Timeline.getPageX(event);
-    params.mouseY = links.Timeline.getPageY(event);
-    params.frameLeft = links.Timeline.getAbsoluteLeft(this.dom.content);
-    params.frameTop = links.Timeline.getAbsoluteTop(this.dom.content);
-    params.previousLeft = 0;
-    params.previousOffset = 0;
-
-    params.moved = false;
-    params.start = new Date(this.start.valueOf());
-    params.end = new Date(this.end.valueOf());
-
-    params.target = links.Timeline.getTarget(event);
-    params.itemIndex = this.getItemIndex(params.target);
-
-    if (options.selectable) {
-        // select/unselect item
-        if (params.itemIndex != undefined) {
-            if (this.isSelected(params.itemIndex)) {
-                this.unselectItem(true);
-            }
-        }
-    }
-};
+//links.Timeline.prototype.onMouseOut = function(event) {
+//    event = event || window.event;
+//
+//    var params = this.eventParams,
+//        options = this.options,
+//        dom = this.dom;
+//
+//    // get mouse position
+//    params.mouseX = links.Timeline.getPageX(event);
+//    params.mouseY = links.Timeline.getPageY(event);
+//    params.frameLeft = links.Timeline.getAbsoluteLeft(this.dom.content);
+//    params.frameTop = links.Timeline.getAbsoluteTop(this.dom.content);
+//    params.previousLeft = 0;
+//    params.previousOffset = 0;
+//
+//    params.moved = false;
+//    params.start = new Date(this.start.valueOf());
+//    params.end = new Date(this.end.valueOf());
+//
+//    params.target = links.Timeline.getTarget(event);
+//    params.itemIndex = this.getItemIndex(params.target);
+//
+//    if (options.selectable) {
+//        // select/unselect item
+//        if (params.itemIndex != undefined) {
+//            if (this.isSelected(params.itemIndex)) {
+//                this.unselectItem(true);
+//            }
+//        }
+//    }
+//};
 
 
 /**
@@ -4829,6 +4829,10 @@ links.Timeline.prototype.selectItem = function(index, hoverOnly) {
             if (this.isEditable(item)) {
                 item.dom.style.cursor = 'move';
             }
+            // If we are collapsing ticks then collapse all before hover or select
+            if (this.options.collapseTicks) {
+                this.collapseAll();
+            }
             if (hoverOnly) {
                 item.hovered = true;
             }
@@ -4842,6 +4846,21 @@ links.Timeline.prototype.selectItem = function(index, hoverOnly) {
         this.repaintDragAreas();
     }
 };
+
+/**
+ * Collapse the bubbles of all timeline ticks that are showing
+ */
+links.Timeline.prototype.collapseAll = function() {
+
+    for (var i = 0; i < this.items.length; i++ ) {
+        if (this.items[i].hovered || this.items[i].selected) {
+            this.items[i].hovered = false;
+            this.items[i].selected = false;
+            this.items[i].unselect(this.options.collapseTicks);
+        }
+    }
+};
+
 
 /**
  * Check if an item is currently selected
@@ -4864,7 +4883,7 @@ links.Timeline.prototype.unselectItem = function(hoverOnly) {
             domItem.style.cursor = '';
 
             if (item.selected && !hoverOnly) {
-                item.unselect(this.options.collapseTicks)
+                item.unselect(this.options.collapseTicks);
                 item.selected = false;
             }
             else if (!item.selected && hoverOnly) {
