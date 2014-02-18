@@ -893,7 +893,10 @@ links.Timeline.prototype.repaintFrame = function() {
             params.onMouseOver = function (event) {me.onMouseOver(event);};
             links.Timeline.addEventListener(dom.content, "mouseover", params.onMouseOver);
         }
-        
+        if (!params.onMouseOut) {
+            params.onMouseOut = function (event) {me.onMouseOut(event);};
+            links.Timeline.addEventListener(dom.content, "mouseout", params.onMouseOut);
+        }
         if (!params.onTouchStart) {
             params.onTouchStart = function (event) {me.onTouchStart(event);};
             links.Timeline.addEventListener(dom.content, "touchstart", params.onTouchStart);
@@ -2622,11 +2625,48 @@ links.Timeline.prototype.onMouseOver = function(event) {
             if (!this.isSelected(params.itemIndex)) {
                 this.unselectItem();
                 this.selectItem(params.itemIndex);
-                this.trigger('select');
             }
         }
     }
 };
+
+/**
+ * Start a moving operation inside the provided parent element
+ * @param {Event} event       The event that occurred (required for
+ *                             retrieving the  mouse position)
+ */
+links.Timeline.prototype.onMouseOut = function(event) {
+    event = event || window.event;
+
+    var params = this.eventParams,
+        options = this.options,
+        dom = this.dom;
+
+    // get mouse position
+    params.mouseX = links.Timeline.getPageX(event);
+    params.mouseY = links.Timeline.getPageY(event);
+    params.frameLeft = links.Timeline.getAbsoluteLeft(this.dom.content);
+    params.frameTop = links.Timeline.getAbsoluteTop(this.dom.content);
+    params.previousLeft = 0;
+    params.previousOffset = 0;
+
+    params.moved = false;
+    params.start = new Date(this.start.valueOf());
+    params.end = new Date(this.end.valueOf());
+
+    params.target = links.Timeline.getTarget(event);
+    params.itemIndex = this.getItemIndex(params.target);
+
+    if (options.selectable) {
+        // select/unselect item
+        if (params.itemIndex != undefined) {
+            if (this.isSelected(params.itemIndex)) {
+                this.unselectItem();
+            }
+        }
+    }
+};
+
 
 /**
  * Start a moving operation inside the provided parent element
@@ -3698,7 +3738,8 @@ links.Timeline.ItemBox.prototype.select = function (collapsed) {
         // Reset the position based on the current top and left
         if (dom.line.offsetTop == dom.offsetTop) {
             dom.style.top = dom.offsetTop - dom.offsetHeight + "px";
-            dom.style.left = Math.max(0, dom.offsetLeft - dom.offsetWidth / 2) + "px";
+            //dom.style.left = Math.max(0, dom.offsetLeft - dom.offsetWidth / 2) + "px";
+            dom.style.left = dom.offsetLeft - dom.offsetWidth / 2;
         }
     }
     else {
