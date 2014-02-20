@@ -3761,7 +3761,7 @@ links.Timeline.ItemBox.prototype.select = function (collapsed) {
         }
     }
     else {
-        links.Timeline.addClassName(dom, 'timeline-event-selected ui-state-active');
+        links.Timeline.addClassName(dom, 'timeline-event timeline-event-box timeline-event-selected ui-state-active');
     }
     links.Timeline.addClassName(dom.line, 'timeline-event-selected ui-state-active');
     links.Timeline.addClassName(dom.dot, 'timeline-event-selected ui-state-active');
