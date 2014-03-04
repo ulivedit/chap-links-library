@@ -557,7 +557,7 @@ links.Timeline.prototype.getItemIndex = function(element) {
         // yes! we have found the parent element of all items
         // retrieve its id from the array with items
         for (var i = 0, iMax = items.length; i < iMax; i++) {
-            if (items[i].dom === e || items[i].dom == e.box) {
+            if (items[i].dom === e || (items[i].dom !== undefined && items[i].dom == e.box)) {
                 index = i;
                 break;
             }

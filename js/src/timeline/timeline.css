@@ -35,7 +35,7 @@ div.timeline-event.tick-third-person:after  { border-top: 10px solid #778890;  }
 
 div.timeline-event-selected{background-color:#fff785;border-color:#ffc200;z-index:999;}
 
-div.timeline-event-box{  -moz-border-radius:3px;/* For Firefox 3.6 and older */border-radius:3px;border: none; text-align:center; position: relative; /* box-shadow: 0 2px 0 rgba(0,0,0,.1);   */padding: 3px 5px; max-width: 200px;}
+div.timeline-event-box{  -moz-border-radius:3px;/* For Firefox 3.6 and older */border-radius:3px;border: none; text-align:center; position: relative; /* box-shadow: 0 2px 0 rgba(0,0,0,.1);   */padding: 3px 5px; max-width: 200px; }
 /* div.timeline-event-box:before { content: ''; border-left: 12px solid transparent; border-right: 12px solid transparent; border-top: 12px solid rgba(0,0,0,.1); position: absolute; top: 100%; margin: 0 0 0 -12px; } */
 div.timeline-event-box:after { content: ''; border-left: 10px solid transparent; border-right: 10px solid transparent; position: absolute; top: 100%;  margin: 0 0 0 -10px; left: 50%; }
 
