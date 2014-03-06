@@ -22,6 +22,7 @@ div.timeline-event{-moz-box-sizing:border-box; border: none;color:#fff;display:i
 div.timeline-event.tick-first-person  { background: #17C1F4; }
 div.timeline-event.tick-collaborated  { background: #17C1F4; }
 div.timeline-event.tick-private  { background: #F8322F; }
+div.timeline-event.tick-public  { background: #3D484E !important; }
 div.timeline-event.tick-new  { background: #FC7025; }
 div.timeline-event.tick-third-person  { background: #778890;  }
 div.timeline-event.tick-third-person span, div.timeline-event.tick-collaborated span { display: block; padding: 0 0 2px 0; }
