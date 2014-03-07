@@ -32,7 +32,7 @@ div.timeline-event.tick-collaborated span strong { font-size: 12px; font-weight:
 div.timeline-event.tick-first-person:after  { border-top: 10px solid #17C1F4; }
 div.timeline-event.tick-collaborated:after  { border-top: 10px solid #17C1F4; }
 div.timeline-event.tick-private:after  { border-top: 10px solid #F8322F; }
-div.timeline-event.tick-public:after  { border-top: 10px solid #3D484E; }
+div.timeline-event.tick-public:after  { border-top: 10px solid #3D484E !important; }
 div.timeline-event.tick-new:after  { border-top: 10px solid #FC7025; }
 div.timeline-event.tick-third-person:after  { border-top: 10px solid #778890;  }
 
