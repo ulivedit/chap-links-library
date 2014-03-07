@@ -32,6 +32,7 @@ div.timeline-event.tick-collaborated span strong { font-size: 12px; font-weight:
 div.timeline-event.tick-first-person:after  { border-top: 10px solid #17C1F4; }
 div.timeline-event.tick-collaborated:after  { border-top: 10px solid #17C1F4; }
 div.timeline-event.tick-private:after  { border-top: 10px solid #F8322F; }
+div.timeline-event.tick-public:after  { border-top: 10px solid #3D484E; }
 div.timeline-event.tick-new:after  { border-top: 10px solid #FC7025; }
 div.timeline-event.tick-third-person:after  { border-top: 10px solid #778890;  }
 
@@ -46,11 +47,11 @@ div.timeline-event-box.timeline-event-cluster:before { content: ''; border-left:
 div.timeline-event-box.timeline-event-cluster:after  { color: #01B2E5; border-left: 10px solid transparent; border-right: 10px solid transparent; border-top: 10px solid #fff;}
 div.timeline-event-cluster div.timeline-event-dot{border-color:#d5ddf6;}
 
-div.timeline-event-dot{-moz-border-radius:3px; border-radius:3px; border: 1px solid #fff; height: 14px !important; width: 3px !important; margin: 0; padding: 0 1px 0 1px;}
+div.timeline-event-dot{-moz-border-radius:4px; border-radius:4px; border: 1px solid #fff; height: 14px !important; width: 4px !important; margin: 0; padding: 0 1px 0 1px;}
 div.timeline-event-dot.tick-new { height: 20px !important; }
 div.timeline-event-dot.tick-collaborated { position: relative; }
 div.timeline-event-dot.timeline-event-cluster { background: #fff; border: 1px solid #B2B2B2 }
-div.timeline-event-dot.tick-collaborated:before { content: ''; -moz-border-radius:3px; border-radius:3px; border: 1px solid #fff; background: #17C1F4; position: absolute; top: -8px; width: 3px; height: 3px; margin: 0 0 0 -1px; padding: 1px; left: 0; }
+/*div.timeline-event-dot.tick-collaborated:before { content: ''; -moz-border-radius:3px; border-radius:3px; border: 1px solid #fff; background: #17C1F4; position: absolute; top: -8px; width: 3px; height: 3px; margin: 0 0 0 -1px; padding: 1px; left: 0; } */
 
 div.timeline-event-range{-moz-border-radius:2px;/* For Firefox 3.6 and older */border-radius:2px;border-style:solid;border-width:1px;}
 div.timeline-event-range-drag-left{cursor:w-resize;z-index:1000;}
