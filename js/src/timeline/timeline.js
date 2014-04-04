@@ -561,6 +561,30 @@ links.Timeline.prototype.getItemIndex = function(element) {
                 index = i;
                 break;
             }
+            /**
+             * If the item is a cluster then zoom into those events.
+             */
+            if (items[i].cluster !== undefined &&
+                items[i].cluster.dom == e) {
+                var start = items[i].cluster.start;
+                var end = items[i].cluster.start;
+                for (var j = 0; j < items[i].cluster.items.length; j++){
+                    // If the end is less than the current element then reset the end
+                    if (end < items[i].cluster.items[j].start) {
+                        end = items[i].cluster.items[j].start;
+                    }
+                    // If the start is greater than the current element then reset the start
+                    if (start > items[i].cluster.items[j].start) {
+                        start = items[i].cluster.items[j].start;
+                    }
+                }
+
+                // Set the visible chart range and zoom out a little so that the edge elements
+                // are visible.
+                this.setVisibleChartRange(start, end);
+                this.zoom(-0.1);
+                break;
+            }
         }
     }
 
@@ -889,10 +913,10 @@ links.Timeline.prototype.repaintFrame = function() {
             params.onMouseDown = function (event) {me.onMouseDown(event);};
             links.Timeline.addEventListener(dom.content, "mousedown", params.onMouseDown);
         }
-        if (!params.onMouseOver) {
-            params.onMouseOver = function (event) {me.onMouseOver(event);};
-            links.Timeline.addEventListener(dom.content, "mouseover", params.onMouseOver);
-        }
+//        if (!params.onMouseOver) {
+//            params.onMouseOver = function (event) {me.onMouseOver(event);};
+//            links.Timeline.addEventListener(dom.content, "mouseover", params.onMouseOver);
+//        }
 //        if (!params.onMouseOut) {
 //            params.onMouseOut = function (event) {me.onMouseOut(event);};
 //            links.Timeline.addEventListener(dom.content, "mouseout", params.onMouseOut);
@@ -6479,7 +6503,6 @@ links.Timeline.getTarget = function (event) {
         // defeat Safari bug
         target = target.parentNode;
     }
-
     return target;
 };
 
