@@ -5624,7 +5624,7 @@ links.Timeline.ClusterGenerator.prototype.getClusters = function (scale) {
 
                         var cluster;
                         var title = 'Cluster containing ' + count +
-                            ' events. Zoom in to see the individual events.';
+                            ' events. Click to zoom in to see the individual events.';
                         var content = '<div title="' + title + '">' + count + ' events</div>';
                         var group = item.group ? item.group.content : undefined;
                         if (containsRanges) {
