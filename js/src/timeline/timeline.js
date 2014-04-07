@@ -5113,6 +5113,7 @@ links.Timeline.prototype.finalItemsPosition = function(items, groupBase, group) 
         var collidingItem = null;
 
         if (this.options.stackEvents) {
+            var negative = false;
             do {
                 // TODO: optimize checking for overlap. when there is a gap without items,
                 //  you only need to check for items from the next item on, not from zero
@@ -5123,11 +5124,15 @@ links.Timeline.prototype.finalItemsPosition = function(items, groupBase, group) 
                         finalItem.top = collidingItem.top + collidingItem.height + eventMargin;
                     }
                     else {
-                        finalItem.top = collidingItem.top - finalItem.height - eventMargin;
+                        if (collidingItem.top - finalItem.height - eventMargin < 0) {
+                            negative = true
+                        } else {
+                            finalItem.top = collidingItem.top - finalItem.height - eventMargin;
+                        }
                     }
                     finalItem.bottom = finalItem.top + finalItem.height;
                 }
-            } while (collidingItem);
+            } while (collidingItem && !negative);
         }
 	    if (group) {
 	        if (axisOnTop) {
